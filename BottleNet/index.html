@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BottleNet | Connect</title>
+  <script async src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/css/styles.css"><link rel="stylesheet" href="assets/css/finishing.css">
+  <script defer src="assets/js/store.js"></script><script defer src="assets/js/portal.js"></script>
+  <script async src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js" onload="window.dispatchEvent(new Event('icons-ready'))"></script><script defer src="assets/js/icons.js"></script>
+</head>
+<body class="portal-body antialiased selection:bg-emerald-100">
+  <header class="site-header"><a class="brand" href="index.html"><span class="brand-mark">♻</span>BottleNet<span class="brand-dot"></span></a><span class="station-label"><span class="status-dot"></span> CAMPUS STATION 01</span></header>
+  <main class="portal-main">
+    <div class="portal-heading"><span class="eyebrow">A LITTLE RECYCLING. MORE CONNECTION.</span><h1>Your next connection<br>starts with a bottle.</h1><p>Give your empty bottles a second life.</p></div>
+    <section class="connection-panel" aria-label="Your connection">
+      <div class="panel-top"><span class="network-label"><span class="wifi-symbol">◉</span> BottleNet Wi-Fi</span><span id="connection-badge" class="badge blue">Connected</span></div>
+      <div class="timer-area"><span class="eyebrow">YOUR TIME REMAINING</span><div id="timer" class="timer">18:42</div><span id="timer-caption" class="muted">A little more time for what matters.</span></div>
+      <div class="session-stats"><div><span class="muted">Bottles this session</span><strong id="session-bottles">2</strong></div><div><span class="muted">Last reward</span><strong id="last-reward">+10 <small>min</small></strong></div></div>
+      <div id="deposit-feedback" class="feedback" role="status" aria-live="polite"><span class="status-dot"></span><span>Station ready for your next bottle</span></div>
+      <button id="deposit-button" class="button primary full"><span>＋</span> Add more time</button>
+      <div id="deposit-controls" class="deposit-controls" hidden><button id="finish-deposit" class="text-button">Finish deposit</button></div>
+      <div class="reward-line"><span>♻</span><strong>1 bottle</strong><span class="muted">=</span><strong id="reward-rate">10 minutes</strong><span class="muted">of connection</span></div>
+    </section>
+    <section class="impact-strip"><span class="impact-icon">♻</span><div><strong>Small actions. Shared impact.</strong><p><span id="community-count">128</span> bottles collected at this station today.</p></div></section>
+    <div class="portal-bottom"><span>Clean, empty PET bottles only</span><a href="admin/index.html">Station admin <span aria-hidden="true">↗</span></a></div>
+    <details class="demo-panel"><summary>Preview controls <span class="badge">Demo</span></summary><label for="preview-state">Station state</label><select id="preview-state"><option value="ready">Ready</option><option value="accepted">Bottle accepted</option><option value="rejected">Bottle rejected</option><option value="busy">Busy</option><option value="full">Bin full</option><option value="maintenance">Maintenance</option><option value="offline">Offline</option><option value="expired">Session expired</option></select><button id="reset-demo" class="text-button">Reset sample data</button><p>Simulated connection. No internet access is granted.</p></details>
+  </main><footer class="portal-footer"><span>BottleNet</span><span>Better habits. Better connected.</span></footer>
+</body>
+</html>
