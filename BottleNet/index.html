@@ -3,27 +3,107 @@
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
   <title>BottleNet | Connect</title>
-  <script async src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="assets/css/styles.css"><link rel="stylesheet" href="assets/css/finishing.css">
-  <script defer src="assets/js/store.js"></script><script defer src="assets/js/portal.js"></script>
+  <link rel="stylesheet" href="assets/css/styles.css"><link rel="stylesheet" href="assets/css/finishing.css"><link rel="stylesheet" href="assets/css/kiosk.css">
+  <script defer src="assets/js/store.js"></script><script defer src="assets/js/portal.js"></script><script defer src="assets/js/kiosk.js"></script>
   <script async src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js" onload="window.dispatchEvent(new Event('icons-ready'))"></script><script defer src="assets/js/icons.js"></script>
 </head>
-<body class="portal-body antialiased selection:bg-emerald-100">
-  <header class="site-header"><a class="brand" href="index.html"><span class="brand-mark">♻</span>BottleNet<span class="brand-dot"></span></a><span class="station-label"><span class="status-dot"></span> CAMPUS STATION 01</span></header>
-  <main class="portal-main">
-    <div class="portal-heading"><span class="eyebrow">A LITTLE RECYCLING. MORE CONNECTION.</span><h1>Your next connection<br>starts with a bottle.</h1><p>Give your empty bottles a second life.</p></div>
-    <section class="connection-panel" aria-label="Your connection">
-      <div class="panel-top"><span class="network-label"><span class="wifi-symbol">◉</span> BottleNet Wi-Fi</span><span id="connection-badge" class="badge blue">Connected</span></div>
-      <div class="timer-area"><span class="eyebrow">YOUR TIME REMAINING</span><div id="timer" class="timer">18:42</div><span id="timer-caption" class="muted">A little more time for what matters.</span></div>
-      <div class="session-stats"><div><span class="muted">Bottles this session</span><strong id="session-bottles">2</strong></div><div><span class="muted">Last reward</span><strong id="last-reward">+10 <small>min</small></strong></div></div>
-      <div id="deposit-feedback" class="feedback" role="status" aria-live="polite"><span class="status-dot"></span><span>Station ready for your next bottle</span></div>
-      <button id="deposit-button" class="button primary full"><span>＋</span> Add more time</button>
-      <div id="deposit-controls" class="deposit-controls" hidden><button id="finish-deposit" class="text-button">Finish deposit</button></div>
-      <div class="reward-line"><span>♻</span><strong>1 bottle</strong><span class="muted">=</span><strong id="reward-rate">10 minutes</strong><span class="muted">of connection</span></div>
+<body class="kiosk-body">
+  <main class="kiosk-shell">
+    <section class="kiosk-card">
+      <div class="kiosk-brand">
+        <div class="kiosk-logo" aria-hidden="true"><i data-lucide="recycle"></i></div>
+        <h1 class="kiosk-title">BottleNet</h1>
+        <p class="kiosk-tagline">Recycle &bull; Earn &bull; Connect</p>
+        <p class="kiosk-sub">Turn Plastic Bottles Into Free Wi-Fi</p>
+      </div>
+
+      <div id="session-banner" class="session-banner" hidden>
+        <span class="eyebrow">YOUR TIME REMAINING</span>
+        <div id="timer" class="timer">--:--</div>
+        <span id="timer-caption" class="muted"></span><br>
+        <span id="connection-badge" class="badge">Connected</span>
+      </div>
+
+      <div id="home-view">
+        <div id="status-pill" class="status-pill"><span class="dot"></span><span id="status-text">Machine Ready</span></div>
+        <button id="deposit-button" class="kiosk-primary"><span id="deposit-label">INSERT BOTTLE</span></button>
+
+        <nav class="kiosk-menu">
+          <button class="menu-row" type="button" data-sheet="rates">
+            <i data-lucide="wifi"></i>
+            Wi-Fi Rates
+          </button>
+          <button class="menu-row" type="button" data-sheet="help">
+            <i data-lucide="circle-help"></i>
+            Help
+          </button>
+          <button class="menu-row" type="button" data-sheet="report">
+            <i data-lucide="triangle-alert"></i>
+            Report a Problem
+          </button>
+          <a class="menu-row admin" href="admin/index.html">
+            <i data-lucide="gauge"></i>
+            Admin Dashboard
+          </a>
+        </nav>
+      </div>
+
+      <div id="deposit-view" class="deposit-view" hidden>
+        <h2>Insert your bottle</h2>
+        <p class="muted">Clean, empty PET bottles only. One bottle at a time.</p>
+        <div id="deposit-feedback" class="feedback" role="status" aria-live="polite">Deposit window open. Insert your bottle.</div>
+        <div class="session-stats">
+          <div><span>Bottles this session</span><strong id="session-bottles">0</strong></div>
+          <div><span>Last reward</span><strong id="last-reward">+0 min</strong></div>
+        </div>
+        <div id="deposit-controls" class="deposit-controls"><button id="finish-deposit" class="text-button">Finish deposit</button></div>
+      </div>
+
+      <p class="reward-line"><span id="reward-rate">1L 10 min &bull; Mismo 7 min &bull; Sakto 5 min</span></p>
+      <p class="reward-line muted"><span id="community-count">0</span> bottles collected at this station today.</p>
+      <p class="kiosk-version">BottleNet v2.0</p>
     </section>
-    <section class="impact-strip"><span class="impact-icon">♻</span><div><strong>Small actions. Shared impact.</strong><p><span id="community-count">128</span> bottles collected at this station today.</p></div></section>
-    <div class="portal-bottom"><span>Clean, empty PET bottles only</span><a href="admin/index.html">Station admin <span aria-hidden="true">↗</span></a></div>
-    <details class="demo-panel"><summary>Preview controls <span class="badge">Demo</span></summary><label for="preview-state">Station state</label><select id="preview-state"><option value="ready">Ready</option><option value="accepted">Bottle accepted</option><option value="rejected">Bottle rejected</option><option value="busy">Busy</option><option value="full">Bin full</option><option value="maintenance">Maintenance</option><option value="offline">Offline</option><option value="expired">Session expired</option></select><button id="reset-demo" class="text-button">Reset sample data</button><p>Simulated connection. No internet access is granted.</p></details>
-  </main><footer class="portal-footer"><span>BottleNet</span><span>Better habits. Better connected.</span></footer>
+
+    <details class="demo-panel"><summary>Preview controls</summary><label for="preview-state">Station state</label><select id="preview-state"><option value="ready">Ready</option><option value="accepted:large">Bottle accepted &mdash; 1L</option><option value="accepted:mismo">Bottle accepted &mdash; Mismo</option><option value="accepted:sakto">Bottle accepted &mdash; Sakto</option><option value="rejected">Bottle rejected</option><option value="busy">Busy</option><option value="full">Bin full</option><option value="maintenance">Maintenance</option><option value="offline">Offline</option><option value="expired">Session expired</option></select><button id="reset-demo" class="text-button">Reset sample data</button><p>Simulated connection. No internet access is granted.</p></details>
+  </main>
+
+  <div id="sheet-rates" class="sheet" hidden>
+    <div class="sheet-card" role="dialog" aria-modal="true" aria-label="Wi-Fi rates">
+      <h2>Wi-Fi Rates</h2>
+      <p>Your Wi-Fi time depends on the size of the bottle you insert.</p>
+      <div class="sheet-rate"><span><strong>1L bottle</strong><br><small id="weight-large">24&ndash;45 g</small></span><strong id="rate-large">10 minutes</strong></div>
+      <div class="sheet-rate"><span><strong>Mismo size</strong><br><small id="weight-mismo">17&ndash;24 g</small></span><strong id="rate-mismo">7 minutes</strong></div>
+      <div class="sheet-rate"><span><strong>Sakto size</strong><br><small id="weight-sakto">10&ndash;17 g</small></span><strong id="rate-sakto">5 minutes</strong></div>
+      <p>Time is added to your current session as soon as each bottle is accepted. Bottles outside these weights are returned.</p>
+      <button class="sheet-close" type="button">Got it</button>
+    </div>
+  </div>
+  <div id="sheet-help" class="sheet" hidden>
+    <div class="sheet-card" role="dialog" aria-modal="true" aria-label="Help">
+      <h2>Help</h2>
+      <ol>
+        <li>Tap <strong>INSERT BOTTLE</strong> to open the hatch.</li>
+        <li>Drop in one clean, empty PET bottle. Caps and labels are fine.</li>
+        <li>Bigger bottles earn more time: 1L <strong>10 min</strong>, Mismo <strong>7 min</strong>, Sakto <strong>5 min</strong>.</li>
+        <li>Wait for the machine to confirm. Your Wi-Fi time is added straight away.</li>
+        <li>Repeat for more time, then tap <strong>Finish deposit</strong>.</li>
+      </ol>
+      <p>Connect to the <strong>BottleNet</strong> Wi-Fi network on your device to use your time.</p>
+      <button class="sheet-close" type="button">Close</button>
+    </div>
+  </div>
+  <div id="sheet-report" class="sheet" hidden>
+    <div class="sheet-card" role="dialog" aria-modal="true" aria-label="Report a problem">
+      <h2>Report a Problem</h2>
+      <p>Something wrong at this station? Let the team know which station you are at:</p>
+      <ul>
+        <li><strong>Station:</strong> Campus Station 01</li>
+        <li><strong>Support:</strong> support@bottlenet.example</li>
+        <li><strong>Phone:</strong> +45 00 00 00 00</li>
+      </ul>
+      <p>Staff are alerted automatically when the bin is full or the machine goes offline.</p>
+      <button class="sheet-close" type="button">Close</button>
+    </div>
+  </div>
 </body>
 </html>

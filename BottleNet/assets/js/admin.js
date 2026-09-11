@@ -6,6 +6,9 @@
         unlocked = sessionStorage.getItem('bottlenet-admin') === 'yes';
     }
     catch { }
+    /* Presentation only: the mockup board opens the dashboard directly. Not authentication. */
+    if (new URLSearchParams(location.search).get('unlock') === '1')
+        unlocked = true;
     function show() { $('login-view').hidden = unlocked; $('dashboard-view').hidden = !unlocked; if (unlocked)
         render();
     else
@@ -32,11 +35,13 @@
         sessionStorage.removeItem('bottlenet-admin');
     }
     catch { } inputs.forEach(i => i.value = ''); show(); };
-    const descriptions = { overview: ['Station overview', 'A live look at your station and its impact.'], transactions: ['Transactions', 'Every bottle and every connection, accounted for.'], sessions: ['Active sessions', 'Manage the connections your station makes possible.'], machine: ['Machine status', 'Station health, collection capacity, and maintenance.'], settings: ['Station settings', 'Manage bottle acceptance and connection rewards.'] };
+    const descriptions = { overview: ['Station overview', 'A live look at your station and its impact.'], transactions: ['Transactions', 'Every bottle and every connection, accounted for.'], sessions: ['Active sessions', 'Manage the connections your station makes possible.'], machine: ['Machine status', 'Station health, collection capacity, and maintenance.'], security: ['Security and alarms', 'Bin tampering, unauthorised access, and alarm history.'], settings: ['Station settings', 'Manage bottle acceptance and connection rewards.'] };
     const badge = (text, color = 'green') => `<span class="badge ${color}">${text}</span>`;
+    const alarmTypes = { bin_opened: ['Collection bin opened', 'Lid switch triggered outside a scheduled collection.'], bottle_removed: ['Bottles removed from bin', 'Bin weight dropped without a collection being recorded.'], tamper: ['Tamper detected', 'Enclosure movement or shock sensed by the tamper sensor.'], door_open: ['Service door left open', 'Service door has stayed open longer than two minutes.'], power: ['Power interruption', 'Station lost mains power and ran on backup.'] };
+    const openAlarms = d => (d.alarms || []).filter(a => !a.ack);
     const metric = (label, value, foot) => `<div class="metric"><div class="metric-label">${label}<span>↗</span></div><div class="metric-value">${value}</div><div class="metric-foot">${foot}</div></div>`;
-    function rows(transactions) { return transactions.length ? transactions.map(t => `<tr><td>${t.id}</td><td>${new Date(t.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td><td>${t.session}</td><td>${t.weight.toFixed(1)} g</td><td>${badge(t.accepted ? 'Accepted' : 'Rejected', t.accepted ? 'green' : 'red')}</td><td>${t.minutes ? `+${t.minutes} min` : '—'}</td></tr>`).join('') : '<tr><td colspan="6" class="empty-state">No matching transactions.</td></tr>'; }
-    const table = transactions => `<div class="table-wrap"><table><thead><tr><th>TRANSACTION</th><th>TIME</th><th>SESSION</th><th>WEIGHT</th><th>RESULT</th><th>TIME AWARDED</th></tr></thead><tbody id="transaction-rows">${rows(transactions)}</tbody></table></div>`;
+    function rows(transactions) { return transactions.length ? transactions.map(t => `<tr><td>${t.id}</td><td>${new Date(t.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td><td>${t.session}</td><td>${t.size && store.get().sizes[t.size] ? store.get().sizes[t.size].label : '—'}</td><td>${t.weight.toFixed(1)} g</td><td>${badge(t.accepted ? 'Accepted' : 'Rejected', t.accepted ? 'green' : 'red')}</td><td>${t.minutes ? `+${t.minutes} min` : '—'}</td></tr>`).join('') : '<tr><td colspan="7" class="empty-state">No matching transactions.</td></tr>'; }
+    const table = transactions => `<div class="table-wrap"><table><thead><tr><th>TRANSACTION</th><th>TIME</th><th>SESSION</th><th>BOTTLE</th><th>WEIGHT</th><th>RESULT</th><th>TIME AWARDED</th></tr></thead><tbody id="transaction-rows">${rows(transactions)}</tbody></table></div>`;
     function navigate(next) { tab = next; query = ''; filter = 'all'; $('admin-toast').textContent = ''; render(); }
     $('admin-nav').onclick = e => { const b = e.target.closest('[data-tab]'); if (b)
         navigate(b.dataset.tab); };
@@ -49,6 +54,18 @@
         $('page-description').textContent = descriptions[tab][1];
         document.querySelectorAll('[data-tab]').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
         $('sidebar-status').textContent = d.station === 'ready' ? 'Station online' : d.station[0].toUpperCase() + d.station.slice(1);
+        const unread = openAlarms(d);
+        const worst = unread.some(a => a.level === 'critical');
+        $('alarm-banner').hidden = !unread.length;
+        const latest = unread[0];
+        $('alarm-banner').dataset.level = worst ? 'critical' : 'warning';
+        if (latest) {
+            $('alarm-banner-level').textContent = worst ? 'CRITICAL' : 'WARNING';
+            $('alarm-banner-title').textContent = alarmTypes[latest.type][0];
+            $('alarm-banner-text').textContent = `${alarmTypes[latest.type][1]} · Campus station 01 · ${new Date(latest.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}${unread.length > 1 ? ` · +${unread.length - 1} more open alarm${unread.length > 2 ? 's' : ''}` : ''}`;
+        }
+        const navCount = document.querySelector('[data-tab="security"] .nav-count');
+        if (navCount) { navCount.textContent = unread.length; navCount.hidden = !unread.length; }
         if (tab === 'overview') {
             $('admin-content').innerHTML = `<section class="metrics">${metric('Bottles collected today', d.bottles, 'Collected for a better tomorrow')}${metric('Active connections', active.length + Number(own), 'Devices connected right now')}${metric('Minutes awarded today', 1280 + d.transactions.filter(t => t.id.length > 10).reduce((n, t) => n + t.minutes, 0), 'More time to stay connected')}${metric('Bin capacity', `${d.bin}%`, d.bin >= 90 ? 'Collection needed' : 'Space for more good habits')}</section><div class="overview-grid"><section class="section-surface"><div class="section-title"><div><h2>A week of small changes</h2><p>Bottles collected over the last 7 days</p></div>${badge('This week')}</div><div class="chart" role="img" aria-label="Daily bottle collection: ${d.collections.join(', ')}">${d.collections.map((n, i) => `<div class="chart-column"><div class="chart-bar" style="height:${n / Math.max(...d.collections) * 115}px" title="${n} bottles"></div><span>${['Wed', 'Thu', 'Fri', 'Sat', 'Sun', 'Mon', 'Today'][i]}</span></div>`).join('')}</div><div class="chart-footer"><span>Every bottle makes a difference</span><strong>${d.collections.reduce((a, b) => a + b, 0)} bottles</strong></div></section><section class="section-surface"><div class="section-title"><h2>Your station</h2>${badge(d.station === 'ready' ? 'Online' : d.station, d.station === 'ready' ? 'green' : 'amber')}</div><div class="machine-summary"><div class="machine-summary-row"><span>Campus station 01</span><span class="muted">BN-001</span></div><div class="machine-summary-row"><span>Collection bin</span><strong>${d.bin}% full</strong></div><div class="progress-track"><div class="progress-fill" style="width:${d.bin}%"></div></div><p>${d.bin >= 90 ? 'Ready for collection' : 'Collection capacity available'}</p><button class="button secondary full" id="view-machine">View machine details →</button></div></section></div><section class="section-surface"><div class="section-title"><div><h2>Recent transactions</h2><p>The latest activity at your station</p></div><button class="text-button" id="view-transactions">View all →</button></div>${table(d.transactions.slice(0, 5))}</section>`;
             $('view-machine').onclick = () => navigate('machine');
@@ -79,21 +96,29 @@
                 return; store.update(s => { s.bin = 0; if (s.station === 'full')
                 s.station = 'ready'; }); render(); toast('Bin collection recorded.'); };
         }
+        if (tab === 'security') {
+            const alarms = d.alarms || [];
+            $('admin-content').innerHTML = `<section class="section-surface"><div class="section-title"><div><h2>Alarm history</h2><p>Bin, enclosure, and power events at this station.</p></div><button class="text-button" id="ack-all" ${openAlarms(d).length ? '' : 'disabled'}>Acknowledge all</button></div><div class="table-wrap"><table><thead><tr><th>ALARM</th><th>TIME</th><th>EVENT</th><th>SEVERITY</th><th>STATUS</th><th>ACTION</th></tr></thead><tbody>${alarms.length ? alarms.map(a => `<tr class="alarm-row ${a.level}"><td>${a.id}</td><td>${new Date(a.time).toLocaleString([], { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}</td><td><strong>${alarmTypes[a.type][0]}</strong><br><span class="muted">${alarmTypes[a.type][1]}</span></td><td>${badge(a.level === 'critical' ? 'Critical' : 'Warning', a.level === 'critical' ? 'red' : 'amber')}</td><td>${a.ack ? badge('Acknowledged', 'green') : badge('Open', 'red')}</td><td>${a.ack ? '—' : `<button class="text-button" data-ack="${a.id}">Acknowledge</button>`}</td></tr>`).join('') : '<tr><td colspan="6" class="empty-state">No alarms recorded.</td></tr>'}</tbody></table></div><p class="muted">Demo only: alarms are simulated in the browser. Production needs hardware sensors and server-side alerting.</p></section>`;
+            document.querySelectorAll('[data-ack]').forEach(b => b.onclick = () => { store.update(s => { const alarm = s.alarms.find(a => a.id === b.dataset.ack); if (alarm) alarm.ack = true; }); render(); toast('Alarm acknowledged.'); });
+            $('ack-all').onclick = () => { store.update(s => s.alarms.forEach(a => a.ack = true)); render(); toast('All alarms acknowledged.'); };
+        }
         if (tab === 'settings') {
-            $('admin-content').innerHTML = `<form id="settings-form" class="settings-form"><div class="form-row"><div><label for="rate">Wi-Fi reward</label><p>Minutes awarded for each accepted bottle.</p></div><input class="field" id="rate" type="number" min="1" max="120" required value="${d.rate}"></div><div class="form-row"><div><label for="min-weight">Minimum bottle weight</label><p>Lower acceptance threshold, in grams.</p></div><input class="field" id="min-weight" type="number" min="1" max="200" step="0.1" required value="${d.minWeight}"></div><div class="form-row"><div><label for="max-weight">Maximum bottle weight</label><p>Upper acceptance threshold, in grams.</p></div><input class="field" id="max-weight" type="number" min="1" max="200" step="0.1" required value="${d.maxWeight}"></div><div class="form-row"><div><h3>Administrator PIN</h3><p>Demo PIN is 1234. Production authentication requires a backend.</p></div>${badge('Demo only')}</div><button class="button primary" type="submit">Save changes</button></form>`;
+            $('admin-content').innerHTML = `<form id="settings-form" class="settings-form">${Object.entries(d.sizes).map(([key, size]) => `<div class="form-row"><div><label for="minutes-${key}">${size.label}</label><p>Minutes awarded for a ${size.short} bottle (${size.minWeight}–${size.maxWeight} g).</p></div><input class="field" id="minutes-${key}" data-size="${key}" type="number" min="1" max="120" required value="${size.minutes}"></div>`).join('')}<div class="form-row"><div><label for="min-weight">Minimum bottle weight</label><p>Lower acceptance threshold, in grams.</p></div><input class="field" id="min-weight" type="number" min="1" max="200" step="0.1" required value="${d.minWeight}"></div><div class="form-row"><div><label for="max-weight">Maximum bottle weight</label><p>Upper acceptance threshold, in grams.</p></div><input class="field" id="max-weight" type="number" min="1" max="200" step="0.1" required value="${d.maxWeight}"></div><div class="form-row"><div><h3>Administrator PIN</h3><p>Demo PIN is 1234. Production authentication requires a backend.</p></div>${badge('Demo only')}</div><button class="button primary" type="submit">Save changes</button></form>`;
             $('settings-form').onsubmit = e => { e.preventDefault(); const min = Number($('min-weight').value), max = Number($('max-weight').value); if (min >= max) {
                 toast('Minimum weight must be less than maximum weight.');
                 return;
-            } store.update(s => { s.rate = Number($('rate').value); s.minWeight = min; s.maxWeight = max; }); toast('Settings saved. New deposits will use the updated reward.'); };
+            } store.update(s => { document.querySelectorAll('[data-size]').forEach(el => { s.sizes[el.dataset.size].minutes = Number(el.value); }); s.rate = s.sizes.large.minutes; s.minWeight = min; s.maxWeight = max; }); toast('Settings saved. New deposits will use the updated reward.'); };
         }
     }
     function toast(text) { $('admin-toast').textContent = text; }
-    $('export-button').onclick = () => { const d = store.get(), csv = [['Transaction', 'Timestamp', 'Session', 'Weight (g)', 'Result', 'Minutes'], ...d.transactions.map(t => [t.id, new Date(t.time).toISOString(), t.session, t.weight, t.accepted ? 'Accepted' : 'Rejected', t.minutes])].map(r => r.map(v => `"${String(v).replaceAll('"', '""')}"`).join(',')).join('\r\n'); const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' })), a = document.createElement('a'); a.href = url; a.download = 'bottlenet-transactions.csv'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); toast('Transaction export downloaded.'); };
+    $('export-button').onclick = () => { const d = store.get(), csv = [['Transaction', 'Timestamp', 'Session', 'Bottle', 'Weight (g)', 'Result', 'Minutes'], ...d.transactions.map(t => [t.id, new Date(t.time).toISOString(), t.session, t.size && d.sizes[t.size] ? d.sizes[t.size].label : '', t.weight, t.accepted ? 'Accepted' : 'Rejected', t.minutes])].map(r => r.map(v => `"${String(v).replaceAll('"', '""')}"`).join(',')).join('\r\n'); const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' })), a = document.createElement('a'); a.href = url; a.download = 'bottlenet-transactions.csv'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); toast('Transaction export downloaded.'); };
     window.addEventListener('storage', () => { if (tab !== 'settings')
         render(); });
     setInterval(() => { if (!unlocked || tab !== 'sessions')
         return; let expired = false; document.querySelectorAll('[data-expiry]').forEach(el => { el.textContent = store.time(Number(el.dataset.expiry) - Date.now()); if (Number(el.dataset.expiry) <= Date.now())
         expired = true; }); if (expired)
         render(); }, 1000);
+    $('alarm-review').onclick = () => navigate('security');
+    $('alarm-ack-all').onclick = () => { store.update(s => s.alarms.forEach(a => a.ack = true)); render(); toast('All alarms acknowledged.'); };
     show();
 })();

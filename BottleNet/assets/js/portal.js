@@ -2,6 +2,7 @@
     const $ = id => document.getElementById(id), store = window.BottleNet;
     const owner = `portal-${Math.random().toString(36).slice(2)}`;
     let depositing = false, processing = false, message = '', messageUntil = 0, pendingDeposit;
+    const statusLabels = { ready: 'Machine Ready', busy: 'Station Busy', full: 'Bin Full', maintenance: 'Under Maintenance', offline: 'Machine Offline' };
     const labels = { ready: 'Station ready for your next bottle', busy: 'Another deposit is in progress. Please wait.', full: 'Bin full. Deposits are temporarily unavailable.', maintenance: 'Station under maintenance. Please check back soon.', offline: 'Station offline. Please check back soon.' };
     function render() {
         const d = store.get(), active = d.expiresAt > Date.now(), locked = d.depositUntil > Date.now() && d.depositOwner !== owner;
@@ -15,12 +16,17 @@
         $('timer-caption').textContent = active ? 'A little more time for what matters.' : 'A new bottle. A new connection.';
         $('session-bottles').textContent = d.sessionBottles;
         $('last-reward').textContent = `+${d.lastReward} min`;
-        $('reward-rate').textContent = `${d.rate} minutes`;
+        $('reward-rate').textContent = Object.values(d.sizes).map(v => `${v.short} ${v.minutes} min`).join(' • ');
         $('community-count').textContent = d.bottles;
         $('deposit-button').hidden = depositing;
         $('deposit-controls').hidden = !depositing;
         $('deposit-button').disabled = d.station !== 'ready' || locked;
-        $('deposit-button').textContent = locked ? 'Station busy' : active ? '＋ Add more time' : '＋ Deposit bottles';
+        $('deposit-label').textContent = locked ? 'STATION BUSY' : active ? 'ADD MORE TIME' : 'INSERT BOTTLE';
+        $('home-view').hidden = depositing;
+        $('deposit-view').hidden = !depositing;
+        $('session-banner').hidden = !active;
+        $('status-text').textContent = locked ? 'Station Busy' : statusLabels[d.station];
+        $('status-pill').dataset.tone = locked || d.station === 'busy' || d.station === 'full' ? 'warn' : d.station === 'ready' ? 'ok' : 'down';
         $('preview-state').disabled = processing;
         $('reset-demo').disabled = processing;
         $('finish-deposit').disabled = processing;
@@ -31,29 +37,47 @@
     function notify(text) { message = text; messageUntil = Date.now() + 6000; render(); }
     $('deposit-button').addEventListener('click', () => { const d = store.get(); if (d.station !== 'ready' || d.depositUntil > Date.now() && d.depositOwner !== owner)
         return; depositing = true; messageUntil = 0; store.update(s => { s.depositOwner = owner; s.depositUntil = Date.now() + 60000; }); render(); });
-    function deposit(accepted) { if (processing || !depositing)
-        return; processing = true; notify('Checking bottle...'); pendingDeposit = setTimeout(() => { const d = store.get(); if (d.station !== 'ready' || d.depositOwner !== owner || d.depositUntil <= Date.now()) {
-        processing = false;
-        depositing = false;
-        notify('Deposit interrupted. No time was awarded.');
-        return;
-    } store.update(s => { const weight = accepted ? Math.round((s.minWeight + s.maxWeight) * 5) / 10 : Math.max(0, s.minWeight - 2.7); s.transactions.unshift({ id: `BN-${Date.now()}`, time: Date.now(), session: 'Your device', weight, accepted, minutes: accepted ? s.rate : 0 }); if (accepted) {
-        s.bottles++;
-        s.sessionBottles++;
-        s.lastReward = s.rate;
-        s.expiresAt = Math.max(Date.now(), s.expiresAt) + s.rate * 60000;
-        s.bin = Math.min(100, s.bin + 1);
-        s.collections[6] = s.bottles;
-        if (s.bin === 100)
-            s.station = 'full';
-    } s.depositUntil = Date.now() + 60000; }); processing = false; notify(accepted ? `Bottle accepted. +${d.rate} minutes added.` : 'Bottle rejected. Weight is outside the accepted range.'); }, 900); }
+    function deposit(accepted, sizeKey) {
+        if (processing || !depositing)
+            return;
+        processing = true;
+        notify('Checking bottle...');
+        pendingDeposit = setTimeout(() => {
+            const d = store.get();
+            if (d.station !== 'ready' || d.depositOwner !== owner || d.depositUntil <= Date.now()) {
+                processing = false;
+                depositing = false;
+                notify('Deposit interrupted. No time was awarded.');
+                return;
+            }
+            const keys = Object.keys(d.sizes), key = sizeKey && d.sizes[sizeKey] ? sizeKey : keys[Math.floor(Math.random() * keys.length)], size = d.sizes[key];
+            const weight = accepted ? Math.round((size.minWeight + size.maxWeight) * 5) / 10 : Math.max(0, d.minWeight - 2.7);
+            const minutes = accepted ? size.minutes : 0;
+            store.update(s => {
+                s.transactions.unshift({ id: `BN-${Date.now()}`, time: Date.now(), session: 'Your device', weight, accepted, minutes, size: accepted ? key : null });
+                if (accepted) {
+                    s.bottles++;
+                    s.sessionBottles++;
+                    s.lastReward = minutes;
+                    s.expiresAt = Math.max(Date.now(), s.expiresAt) + minutes * 60000;
+                    s.bin = Math.min(100, s.bin + 1);
+                    s.collections[6] = s.bottles;
+                    if (s.bin === 100)
+                        s.station = 'full';
+                }
+                s.depositUntil = Date.now() + 60000;
+            });
+            processing = false;
+            notify(accepted ? `${size.label} accepted. +${minutes} minutes added.` : 'Bottle rejected. Weight is outside the accepted range.');
+        }, 900);
+    }
     $('finish-deposit').onclick = () => { depositing = false; store.update(d => { d.depositUntil = 0; d.depositOwner = null; }); notify('All set. Enjoy your connection.'); };
     $('preview-state').onchange = e => {
-        const state = e.target.value;
+        const [state, sizeKey] = e.target.value.split(':');
         if (state === 'accepted' || state === 'rejected') {
             const d = store.get();
             if (!depositing && d.station === 'ready') $('deposit-button').click();
-            if (depositing) deposit(state === 'accepted');
+            if (depositing) deposit(state === 'accepted', sizeKey);
             else notify('Station unavailable. Choose Ready before previewing a bottle.');
             e.target.value = d.station;
             return;

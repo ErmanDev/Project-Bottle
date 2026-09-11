@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>BottleNet | Devices Poster</title>
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    width:1600px;
+    height:1000px;
+    overflow:hidden;
+    font-family:Arial,Helvetica,sans-serif;
+    color:#22352c;
+    background:radial-gradient(120% 95% at 50% -10%,#f7faf7 0%,#e3ece5 55%,#cddbd2 100%)
+  }
+  .poster{
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:52px 60px 0
+  }
+  .logo{
+    display:flex;
+    align-items:center;
+    gap:16px
+  }
+  .logo img{
+    width:64px;
+    height:64px;
+    padding:9px;
+    background:#147653;
+    border-radius:17px;
+    box-shadow:0 10px 22px rgba(20,118,83,.28)
+  }
+  .logo span{
+    font-size:48px;
+    font-weight:800;
+    letter-spacing:-.5px;
+    color:#146b4c
+  }
+  .tagline{
+    margin:14px 0 0;
+    font-size:17px;
+    letter-spacing:3.4px;
+    color:#5d7368;
+    text-transform:uppercase
+  }
+  .stage{
+    position:relative;
+    width:1180px;
+    margin-top:40px
+  }
+  .laptop{width:1010px}
+  .laptop-lid{
+    position:relative;
+    padding:15px 15px 19px;
+    border-radius:22px 22px 9px 9px;
+    background:linear-gradient(160deg,#3f4a44 0%,#242c28 55%,#19201c 100%);
+    box-shadow:0 38px 70px rgba(24,44,32,.34),inset 0 1px 0 rgba(255,255,255,.14)
+  }
+  .laptop-lid::before{
+    content:"";position:absolute;top:6px;left:50%;transform:translateX(-50%);
+    width:8px;height:8px;border-radius:50%;background:#4f5e55
+  }
+  .laptop-screen{
+    position:relative;overflow:hidden;border-radius:8px;background:#f6f8f6;
+    width:980px;height:613px
+  }
+  .laptop-base{
+    height:18px;margin:0 -40px;border-radius:0 0 16px 16px;
+    background:linear-gradient(180deg,#2c342f 0%,#3b453e 40%,#1d2420 100%);
+    box-shadow:0 20px 30px rgba(24,44,32,.3)
+  }
+  .laptop-notch{width:130px;height:8px;margin:0 auto;border-radius:0 0 8px 8px;background:#151b18}
+  .phone{
+    position:absolute;right:-40px;bottom:-30px;width:282px;padding:11px;border-radius:40px;
+    background:linear-gradient(160deg,#3f4a44,#19201c);
+    box-shadow:0 30px 52px rgba(24,44,32,.4),inset 0 1px 0 rgba(255,255,255,.16)
+  }
+  .phone-screen{position:relative;overflow:hidden;border-radius:30px;background:#e7eee8;width:260px;height:562px}
+  .caption{margin-top:auto;padding-bottom:30px;text-align:center;font-size:14px;line-height:1.7;color:#5d7368}
+  .caption strong{display:block;font-size:17px;color:#22352c}
+  .phone::after{
+    content:"";position:absolute;top:20px;left:50%;transform:translateX(-50%);
+    width:88px;height:22px;border-radius:13px;background:#151b18;z-index:2
+  }
+  .frame{position:absolute;top:0;left:0;border:0;transform-origin:top left;background:#f6f8f6}
+  #admin-frame{width:1440px;height:900px;transform:scale(.680556)}
+  #portal-frame{width:420px;height:908px;transform:scale(.619048)}
+  .footline strong{display:block;font-size:15px;color:#22352c}
+</style>
+</head>
+<body>
+  <div class="poster">
+    <div class="logo"><img src="../assets/images/bottlenet-mark.svg" alt=""><span>BottleNet</span></div>
+    <p class="tagline">Recycle &bull; Earn &bull; Connect</p>
+    <div class="stage">
+      <div class="laptop">
+        <div class="laptop-lid">
+          <div class="laptop-screen"><iframe class="frame" id="admin-frame" src="../admin/index.html?unlock=1" title="Admin dashboard" scrolling="no"></iframe></div>
+        </div>
+        <div class="laptop-base"></div>
+        <div class="laptop-notch"></div>
+      </div>
+      <div class="phone">
+        <div class="phone-screen"><iframe class="frame" id="portal-frame" src="../index.html" title="Connection portal" scrolling="no"></iframe></div>
+      </div>
+    </div>
+    <p class="caption"><strong>Station admin on the desk. The portal in your hand.</strong>Turn plastic bottles into free Wi-Fi.</p>
+  </div>
+</body>
+</html>

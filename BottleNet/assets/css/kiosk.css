@@ -1,0 +1,378 @@
+/* Kiosk home screen: one centred card on a soft green ground. */
+:root{
+  --k-green:#4a9e4f;
+  --k-green-dark:#2f7d38;
+  --k-green-deep:#246b2d;
+  --k-bg:#e7eee8;
+  --k-row:#eef1ef;
+  --k-row-hover:#e5eae6;
+  --k-ink:#2b3330;
+  --k-muted:#6f7a74
+}
+body.kiosk-body{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:24px 16px;
+  background:var(--k-bg);
+  color:var(--k-ink)
+}
+.kiosk-shell{
+  width:100%;
+  max-width:420px;
+  display:flex;
+  flex-direction:column;
+  gap:14px
+}
+.kiosk-card{
+  background:#fff;
+  border-radius:26px;
+  padding:34px 26px 22px;
+  box-shadow:0 18px 44px rgba(31,64,42,.13);
+  text-align:center
+}
+.kiosk-brand{
+  margin-bottom:2px
+}
+.kiosk-logo{
+  width:96px;
+  height:96px;
+  margin:0 auto 18px;
+  border-radius:50%;
+  background:var(--k-green);
+  display:grid;
+  place-items:center
+}
+.kiosk-logo svg{
+  width:54px;
+  height:54px;
+  stroke:#fff;
+  fill:none;
+  stroke-width:2.1;
+  stroke-linecap:round;
+  stroke-linejoin:round
+}
+.kiosk-title{
+  font-size:38px;
+  font-weight:800;
+  line-height:1.1;
+  color:var(--k-green-dark);
+  margin:0
+}
+.kiosk-tagline{
+  margin:8px 0 0;
+  font-size:17px;
+  color:#4a5550
+}
+.kiosk-sub{
+  margin:12px 0 0;
+  font-size:15px;
+  font-weight:600;
+  color:var(--k-ink)
+}
+.status-pill{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:9px;
+  margin:22px 0 0;
+  padding:13px 16px;
+  border-radius:14px;
+  background:var(--k-row);
+  font-size:17px;
+  font-weight:700;
+  color:var(--k-green-deep)
+}
+.status-pill .dot{
+  width:13px;
+  height:13px;
+  border-radius:50%;
+  background:var(--k-green);
+  flex:none
+}
+.status-pill[data-tone="warn"]{
+  color:#8a5a12
+}
+.status-pill[data-tone="warn"] .dot{
+  background:#d59320
+}
+.status-pill[data-tone="down"]{
+  color:#8c3a34
+}
+.status-pill[data-tone="down"] .dot{
+  background:#c0544b
+}
+.kiosk-primary{
+  width:100%;
+  margin:14px 0 0;
+  padding:19px 20px;
+  border:0;
+  border-radius:999px;
+  background:var(--k-green);
+  color:#fff;
+  font-size:19px;
+  font-weight:800;
+  letter-spacing:.5px;
+  box-shadow:0 8px 18px rgba(58,140,66,.28)
+}
+.kiosk-primary:hover:not(:disabled){
+  background:var(--k-green-dark)
+}
+.kiosk-primary:active:not(:disabled){
+  transform:translateY(1px)
+}
+.kiosk-menu{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-top:18px
+}
+.menu-row{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  width:100%;
+  padding:15px 18px;
+  border:0;
+  border-radius:14px;
+  background:var(--k-row);
+  font-size:16px;
+  font-weight:600;
+  color:var(--k-ink);
+  text-align:left
+}
+.menu-row:hover{
+  background:var(--k-row-hover)
+}
+.menu-row svg{
+  width:21px;
+  height:21px;
+  stroke:var(--k-muted);
+  fill:none;
+  stroke-width:1.8;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  flex:none
+}
+.menu-row.admin{
+  border:1px solid #d7e0d9;
+  background:#f4f7f4;
+  color:var(--k-muted)
+}
+.kiosk-version{
+  margin:20px 0 0;
+  font-size:13px;
+  color:#9aa5a0
+}
+/* Session banner shown on the home card while time is running. */
+.session-banner{
+  margin-top:20px;
+  padding:16px;
+  border-radius:16px;
+  background:#eef6f0;
+  border:1px solid #d8e7dd
+}
+.session-banner .timer{
+  font-size:34px;
+  font-weight:800;
+  color:var(--k-green-deep);
+  line-height:1.1;
+  margin:4px 0
+}
+.session-banner .badge{
+  display:inline-block;
+  margin-top:6px;
+  padding:4px 10px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:700;
+  background:#e2edf7;
+  color:#2c5f8f
+}
+.session-banner .badge.amber{
+  background:#fbf0dc;
+  color:#8a5a12
+}
+/* Deposit view replaces the home card while the hatch is open. */
+.deposit-view{
+  margin-top:20px;
+  text-align:center
+}
+.deposit-view h2{
+  font-size:22px;
+  font-weight:800;
+  color:var(--k-green-dark)
+}
+.deposit-view .feedback{
+  margin:18px 0 0;
+  padding:15px;
+  border-radius:14px;
+  background:var(--k-row);
+  font-size:15px;
+  font-weight:600
+}
+.deposit-view .feedback.error{
+  background:#fbeceb;
+  color:#8c3a34
+}
+.session-stats{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:14px
+}
+.session-stats div{
+  padding:12px;
+  border-radius:14px;
+  background:var(--k-row);
+  display:flex;
+  flex-direction:column;
+  gap:3px
+}
+.session-stats span{
+  font-size:12px;
+  color:var(--k-muted)
+}
+.session-stats strong{
+  font-size:18px;
+  color:var(--k-green-deep)
+}
+.reward-line{
+  margin:14px 0 0;
+  font-size:13px;
+  color:var(--k-muted)
+}
+.reward-line:first-of-type{
+  margin-top:18px;
+  padding-top:14px;
+  border-top:1px solid #eceff0;
+  font-weight:600;
+  color:var(--k-green-deep)
+}
+.sheet-rate small{
+  color:var(--k-muted)
+}
+.sheet-rate span{
+  text-align:left
+}
+.reward-line strong{
+  color:var(--k-ink)
+}
+.text-button{
+  margin-top:16px;
+  padding:12px 18px;
+  border:1px solid #d7e0d9;
+  border-radius:999px;
+  background:#fff;
+  font-size:15px;
+  font-weight:700;
+  color:var(--k-green-dark)
+}
+.text-button:hover:not(:disabled){
+  background:var(--k-row)
+}
+/* Sheets */
+.sheet[hidden]{
+  display:none!important
+}
+.sheet{
+  position:fixed;
+  inset:0;
+  z-index:20;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:rgba(28,45,34,.45)
+}
+.sheet-card{
+  width:100%;
+  max-width:400px;
+  max-height:86vh;
+  overflow:auto;
+  background:#fff;
+  border-radius:22px;
+  padding:24px
+}
+.sheet-card h2{
+  font-size:20px;
+  font-weight:800;
+  color:var(--k-green-dark);
+  margin:0 0 12px
+}
+.sheet-card p,.sheet-card li{
+  font-size:15px;
+  line-height:1.5;
+  color:#4a5550
+}
+.sheet-card ul,.sheet-card ol{
+  margin:0;
+  padding-left:20px;
+  display:flex;
+  flex-direction:column;
+  gap:8px
+}
+.sheet-rate{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  padding:13px 15px;
+  border-radius:13px;
+  background:var(--k-row);
+  font-size:15px;
+  margin-bottom:9px
+}
+.sheet-rate strong{
+  color:var(--k-green-deep)
+}
+.sheet-close{
+  width:100%;
+  margin-top:18px;
+  padding:14px;
+  border:0;
+  border-radius:999px;
+  background:var(--k-green);
+  color:#fff;
+  font-size:16px;
+  font-weight:700
+}
+.sheet-close:hover{
+  background:var(--k-green-dark)
+}
+/* Demo controls stay available but out of the way. */
+.demo-panel{
+  max-width:420px;
+  width:100%;
+  font-size:13px;
+  color:var(--k-muted);
+  background:rgba(255,255,255,.6);
+  border-radius:14px;
+  padding:10px 14px
+}
+.demo-panel summary{
+  cursor:pointer;
+  font-weight:700
+}
+.demo-panel label{
+  display:block;
+  margin:10px 0 4px
+}
+.demo-panel select{
+  width:100%;
+  padding:8px;
+  border:1px solid #d7e0d9;
+  border-radius:10px;
+  background:#fff
+}
+.demo-panel .text-button{
+  margin-top:10px;
+  padding:9px 14px;
+  font-size:13px
+}
+@media (max-width:420px){
+  .kiosk-card{padding:28px 18px 18px}
+  .kiosk-title{font-size:32px}
+  .kiosk-logo{width:82px;height:82px}
+}

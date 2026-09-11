@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BottleNet | Device Mockup</title>
+  <link rel="stylesheet" href="mockups.css">
+</head>
+<body>
+  <main>
+    <header>
+      <div class="identity"><img src="../assets/images/bottlenet-mark.svg" alt=""><span>BottleNet</span></div>
+      <div class="heading-bottom">
+        <div>
+          <p class="eyebrow">ONE SYSTEM, TWO SCREENS</p>
+          <h1>Station admin on the desk. The portal in your hand.</h1>
+        </div>
+        <span class="edition">UI PROTOTYPE / LIVE</span>
+      </div>
+    </header>
+
+    <section class="stage" aria-label="Device mockup">
+      <div class="laptop">
+        <div class="laptop-lid">
+          <div class="laptop-screen" id="laptop-screen">
+            <iframe class="frame" id="admin-frame" src="../admin/index.html?unlock=1" title="BottleNet admin dashboard" loading="lazy" scrolling="no"></iframe>
+          </div>
+        </div>
+        <div class="laptop-base"></div>
+        <div class="laptop-notch"></div>
+      </div>
+      <div class="phone">
+        <div class="phone-screen" id="phone-screen">
+          <iframe class="frame" id="portal-frame" src="../index.html" title="BottleNet connection portal" loading="lazy" scrolling="no"></iframe>
+        </div>
+      </div>
+    </section>
+
+    <section class="captions">
+      <div class="caption">
+        <span class="number">01</span>
+        <div>
+          <h2>Admin dashboard &mdash; laptop</h2>
+          <p>Station overview, transactions, sessions, machine health, security alarms, and reward settings at a 1440 &times; 900 desktop viewport.</p>
+          <a href="../admin/index.html">Open the admin workspace &#8599;</a>
+        </div>
+      </div>
+      <div class="caption">
+        <span class="number">02</span>
+        <div>
+          <h2>Connection portal &mdash; phone</h2>
+          <p>The kiosk screen people actually touch: machine status, INSERT BOTTLE, Wi-Fi rates by bottle size, and time remaining, at a 390 &times; 844 phone viewport.</p>
+          <a href="../index.html">Open the connection portal &#8599;</a>
+        </div>
+      </div>
+    </section>
+
+    <footer><span>Plastic bottles. Real possibilities.</span><span>Live UI &middot; Sample data &middot; Serve over HTTP for shared storage</span></footer>
+  </main>
+
+  <script>
+    /* The frames render at true device size, then scale to fit their bezel. */
+    const fit = (screenId, frameId, width) => {
+      const screen = document.getElementById(screenId), frame = document.getElementById(frameId);
+      const scale = screen.clientWidth / width;
+      frame.style.transform = `scale(${scale})`;
+    };
+    const fitAll = () => { fit('laptop-screen', 'admin-frame', 1440); fit('phone-screen', 'portal-frame', 390); };
+    window.addEventListener('resize', fitAll);
+    window.addEventListener('load', fitAll);
+    fitAll();
+  </script>
+</body>
+</html>
