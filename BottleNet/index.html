@@ -93,6 +93,9 @@
           </div>
         </div>
 
+        <p class="reward-line" hidden>
+          <span id="reward-rate"></span>
+        </p>
         <p class="reward-line muted">
           <span id="community-count">0</span> bottles collected at this station
           today.
@@ -128,27 +131,7 @@
       >
         <h2>Wi-Fi Rates</h2>
         <p>Your Wi-Fi time depends on the size of the bottle you insert.</p>
-        <div class="sheet-rate">
-          <span
-            ><strong>1L bottle</strong><br /><small id="weight-large"
-              >24&ndash;45 g</small
-            ></span
-          ><strong id="rate-large">10 minutes</strong>
-        </div>
-        <div class="sheet-rate">
-          <span
-            ><strong>Mismo size</strong><br /><small id="weight-mismo"
-              >17&ndash;24 g</small
-            ></span
-          ><strong id="rate-mismo">7 minutes</strong>
-        </div>
-        <div class="sheet-rate">
-          <span
-            ><strong>Sakto size</strong><br /><small id="weight-sakto"
-              >10&ndash;17 g</small
-            ></span
-          ><strong id="rate-sakto">5 minutes</strong>
-        </div>
+        <div id="sheet-rate-list"></div>
         <p>
           Time is added to your current session as soon as each bottle is
           accepted. Bottles outside these weights are returned.

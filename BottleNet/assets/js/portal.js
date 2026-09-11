@@ -16,7 +16,8 @@
         $('timer-caption').textContent = active ? 'A little more time for what matters.' : 'A new bottle. A new connection.';
         $('session-bottles').textContent = d.sessionBottles;
         $('last-reward').textContent = `+${d.lastReward} min`;
-        $('reward-rate').textContent = Object.values(d.sizes).map(v => `${v.short} ${v.minutes} min`).join(' • ');
+        const rateEl = $('reward-rate');
+        if (rateEl) rateEl.textContent = Object.values(d.sizes).map(size => `${size.short} ${size.minutes} min`).join(' • ');
         $('community-count').textContent = d.bottles;
         $('deposit-button').hidden = depositing;
         $('deposit-controls').hidden = !depositing;

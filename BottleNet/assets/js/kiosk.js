@@ -4,11 +4,21 @@
     const sheets = { rates: $('sheet-rates'), help: $('sheet-help'), report: $('sheet-report') };
     let lastFocus = null;
     function fillRates() {
-        const sizes = store.get().sizes;
-        Object.entries(sizes).forEach(([key, size]) => {
-            $('rate-' + key).textContent = size.minutes + ' minutes';
-            $('weight-' + key).textContent = size.minWeight + '–' + size.maxWeight + ' g';
-        });
+        const list = $('sheet-rate-list');
+        list.replaceChildren(...Object.values(store.get().sizes).map(size => {
+            const row = document.createElement('div');
+            row.className = 'sheet-rate';
+            const label = document.createElement('span');
+            const name = document.createElement('strong');
+            name.textContent = size.label;
+            const weight = document.createElement('small');
+            weight.textContent = `${size.minWeight}–${size.maxWeight} g`;
+            label.append(name, document.createElement('br'), weight);
+            const minutes = document.createElement('strong');
+            minutes.textContent = `${size.minutes} minutes`;
+            row.append(label, minutes);
+            return row;
+        }));
     }
     function open(name) {
         const sheet = sheets[name];
@@ -26,5 +36,6 @@
     document.querySelectorAll('.sheet-close').forEach(el => el.addEventListener('click', closeAll));
     Object.values(sheets).forEach(sheet => sheet.addEventListener('click', e => { if (e.target === sheet) closeAll(); }));
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAll(); });
+    window.addEventListener('storage', () => { if (!sheets.rates.hidden) fillRates(); });
     window.addEventListener('bottlenet-change', () => { if (!sheets.rates.hidden) fillRates(); });
 })();

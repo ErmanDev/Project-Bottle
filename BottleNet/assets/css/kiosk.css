@@ -244,12 +244,10 @@ body.kiosk-body{
   font-size:13px;
   color:var(--k-muted)
 }
-.reward-line:first-of-type{
+.reward-line:not([hidden]){
   margin-top:18px;
   padding-top:14px;
-  border-top:1px solid #eceff0;
-  font-weight:600;
-  color:var(--k-green-deep)
+  border-top:1px solid #eceff0
 }
 .sheet-rate small{
   color:var(--k-muted)
