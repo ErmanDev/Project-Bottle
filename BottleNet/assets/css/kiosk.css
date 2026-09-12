@@ -37,8 +37,8 @@ body.kiosk-body{
   margin-bottom:2px
 }
 .kiosk-logo{
-  width:96px;
-  height:96px;
+  width:62px;
+  height:62px;
   margin:0 auto 18px;
   border-radius:50%;
   background:var(--k-green);
@@ -46,8 +46,8 @@ body.kiosk-body{
   place-items:center
 }
 .kiosk-logo svg{
-  width:54px;
-  height:54px;
+  width:34px;
+  height:34px;
   stroke:#fff;
   fill:none;
   stroke-width:2.1;
@@ -55,22 +55,11 @@ body.kiosk-body{
   stroke-linejoin:round
 }
 .kiosk-title{
-  font-size:38px;
-  font-weight:800;
+  font-size:21px;
+  font-weight:600;
   line-height:1.1;
   color:var(--k-green-dark);
   margin:0
-}
-.kiosk-tagline{
-  margin:8px 0 0;
-  font-size:17px;
-  color:#4a5550
-}
-.kiosk-sub{
-  margin:12px 0 0;
-  font-size:15px;
-  font-weight:600;
-  color:var(--k-ink)
 }
 .status-pill{
   display:flex;
@@ -161,11 +150,6 @@ body.kiosk-body{
   background:#f4f7f4;
   color:var(--k-muted)
 }
-.kiosk-version{
-  margin:20px 0 0;
-  font-size:13px;
-  color:#9aa5a0
-}
 /* Session banner shown on the home card while time is running. */
 .session-banner{
   margin-top:20px;
@@ -181,29 +165,69 @@ body.kiosk-body{
   line-height:1.1;
   margin:4px 0
 }
-.session-banner .badge{
-  display:inline-block;
-  margin-top:6px;
-  padding:4px 10px;
+/* Connection pill: state is carried by colour, a label, and a live dot. */
+.conn-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  margin-top:4px;
+  padding:7px 15px 7px 12px;
   border-radius:999px;
-  font-size:11px;
+  font-size:13px;
   font-weight:700;
-  background:#e2edf7;
-  color:#2c5f8f
+  letter-spacing:.2px;
+  border:1px solid transparent;
+  background:#dff0e3;
+  border-color:#b9dcc2;
+  color:var(--k-green-deep)
 }
-.session-banner .badge.amber{
+.conn-pill .conn-dot{
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  flex:none;
+  background:currentColor;
+  box-shadow:0 0 0 0 currentColor;
+  animation:conn-pulse 2s ease-out infinite
+}
+.conn-pill.off{
   background:#fbf0dc;
+  border-color:#ecd7a9;
   color:#8a5a12
+}
+.conn-pill.off .conn-dot{
+  animation:none
+}
+@keyframes conn-pulse{
+  0%{box-shadow:0 0 0 0 rgba(36,107,45,.45)}
+  70%{box-shadow:0 0 0 7px rgba(36,107,45,0)}
+  100%{box-shadow:0 0 0 0 rgba(36,107,45,0)}
+}
+@media (prefers-reduced-motion:reduce){
+  .conn-pill .conn-dot{animation:none}
 }
 /* Deposit view replaces the home card while the hatch is open. */
 .deposit-view{
   margin-top:20px;
   text-align:center
 }
-.deposit-view h2{
+/* Deposit heading sits above the time-remaining box while the hatch is open. */
+.deposit-heading{
+  margin-top:20px;
+  text-align:center
+}
+.deposit-heading h2{
+  margin:0;
   font-size:22px;
   font-weight:800;
   color:var(--k-green-dark)
+}
+.deposit-heading p{
+  margin:6px 0 0;
+  font-size:14px
+}
+.deposit-heading[hidden]{
+  display:none!important
 }
 .deposit-view .feedback{
   margin:18px 0 0;
@@ -239,24 +263,11 @@ body.kiosk-body{
   font-size:18px;
   color:var(--k-green-deep)
 }
-.reward-line{
-  margin:14px 0 0;
-  font-size:13px;
-  color:var(--k-muted)
-}
-.reward-line:not([hidden]){
-  margin-top:18px;
-  padding-top:14px;
-  border-top:1px solid #eceff0
-}
 .sheet-rate small{
   color:var(--k-muted)
 }
 .sheet-rate span{
   text-align:left
-}
-.reward-line strong{
-  color:var(--k-ink)
 }
 .text-button{
   margin-top:16px;
@@ -371,6 +382,348 @@ body.kiosk-body{
 }
 @media (max-width:420px){
   .kiosk-card{padding:28px 18px 18px}
-  .kiosk-title{font-size:32px}
-  .kiosk-logo{width:82px;height:82px}
+  .kiosk-title{font-size:19px}
+  .kiosk-logo{width:54px;height:54px}
+  .kiosk-logo svg{width:30px;height:30px}
+}
+/* Brand header: wordmark flush left, mark flush right. */
+.kiosk-brand-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  text-align:left
+}
+.kiosk-brand-row .kiosk-brand-text{
+  min-width:0
+}
+.kiosk-brand-row .kiosk-logo{
+  margin:0;
+  flex:none
+}
+/* Countdown bar that drains alongside the numeric timer. */
+.timer-track{
+  height:18px;
+  margin:12px 0 14px;
+  border-radius:4px;
+  background:#d8e7dd;
+  overflow:hidden
+}
+.timer-fill{
+  display:block;
+  height:100%;
+  width:100%;
+  border-radius:3px;
+  background:linear-gradient(90deg,var(--k-green),var(--k-green-deep));
+  transition:width 1s linear
+}
+.timer-fill.low{
+  background:linear-gradient(90deg,#e0a33a,#c0544b)
+}
+@media (prefers-reduced-motion:reduce){
+  .timer-fill{transition:none}
+}
+@media (max-width:420px){
+  .kiosk-brand-row{gap:12px}
+}
+/* Report a Problem: banner header, form body, status footer. */
+.report-card{
+  padding:0;
+  overflow:hidden;
+  text-align:left;
+  max-width:380px
+}
+.report-head{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:18px 18px 20px;
+  background:var(--k-green);
+  color:#fff
+}
+.report-head-icon{
+  display:grid;
+  place-items:center;
+  width:34px;
+  height:34px;
+  flex:none;
+  border-radius:10px;
+  background:rgba(255,255,255,.9)
+}
+.report-head-icon svg{
+  width:19px;
+  height:19px;
+  stroke:var(--k-green-dark);
+  fill:none;
+  stroke-width:2;
+  stroke-linecap:round;
+  stroke-linejoin:round
+}
+.report-head-text{
+  flex:1;
+  min-width:0
+}
+.report-eyebrow{
+  display:block;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:1.1px;
+  color:rgba(255,255,255,.85)
+}
+.report-head h2{
+  margin:2px 0 0;
+  font-size:20px;
+  font-weight:800;
+  color:#fff
+}
+.report-x{
+  width:28px;
+  height:28px;
+  flex:none;
+  padding:0;
+  border:0;
+  border-radius:8px;
+  background:transparent;
+  color:#fff;
+  font-size:22px;
+  line-height:1;
+  margin:0
+}
+.report-x:hover{
+  background:rgba(255,255,255,.18)
+}
+.report-body{
+  display:flex;
+  flex-direction:column;
+  padding:20px 18px 18px
+}
+.report-body label,.report-body .field-label{
+  font-size:13px;
+  font-weight:600;
+  color:var(--k-ink);
+  margin-bottom:7px
+}
+.report-body label+.report-field,.report-body .picker{
+  margin-bottom:16px
+}
+.report-field{
+  width:100%;
+  padding:12px 13px;
+  border:1px solid #d7e0d9;
+  border-radius:10px;
+  background:#fff;
+  font-size:14px;
+  color:var(--k-ink);
+  font-family:inherit
+}
+/* Fields signal focus with their own border, never a focus ring. */
+.report-field:focus,.report-field:focus-visible{
+  outline:none;
+  border-color:var(--k-green)
+}
+.report-field.invalid{
+  border-color:#c0544b;
+  background:#fdf6f5
+}
+textarea.report-field{
+  resize:vertical;
+  min-height:76px
+}
+.report-status{
+  margin:0;
+  font-size:13px;
+  font-weight:600;
+  color:var(--k-green-deep);
+  min-height:19px
+}
+.report-status.error{
+  color:#8c3a34
+}
+.report-submit{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:9px;
+  width:100%;
+  margin-top:10px;
+  padding:14px;
+  border:0;
+  border-radius:999px;
+  background:var(--k-green);
+  color:#fff;
+  font-size:14px;
+  font-weight:800;
+  letter-spacing:.6px
+}
+.report-submit:hover:not(:disabled){
+  background:var(--k-green-dark)
+}
+.report-submit:disabled{
+  opacity:.6
+}
+.report-submit svg{
+  width:16px;
+  height:16px;
+  stroke:currentColor;
+  fill:none;
+  stroke-width:2;
+  stroke-linecap:round;
+  stroke-linejoin:round
+}
+.report-foot{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:14px 18px;
+  border-top:1px solid #eceff0;
+  background:#f7faf8
+}
+.report-ready{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:1px;
+  color:var(--k-muted)
+}
+.report-ready .dot{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:var(--k-green);
+  flex:none
+}
+.report-ready[data-tone="warn"] .dot{
+  background:#d59320
+}
+.report-ready[data-tone="down"] .dot{
+  background:#c0544b
+}
+.report-close{
+  width:auto;
+  margin:0;
+  padding:10px 22px;
+  border:0;
+  border-radius:999px;
+  background:var(--k-green);
+  color:#fff;
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.8px
+}
+.report-close:hover{
+  background:var(--k-green-dark)
+}
+/* Custom problem-type dropdown: a button plus its own listbox. */
+.picker{
+  position:relative
+}
+.picker-button{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  text-align:left;
+  cursor:pointer
+}
+.picker-button.open{
+  border-color:var(--k-green)
+}
+.picker-button.invalid{
+  border-color:#c0544b;
+  background:#fdf6f5
+}
+.picker-value{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap
+}
+.picker-value.is-placeholder{
+  color:#9aa5a0
+}
+.picker-caret{
+  display:grid;
+  place-items:center;
+  flex:none;
+  transition:transform .18s ease
+}
+.picker-button.open .picker-caret{
+  transform:rotate(180deg)
+}
+.picker-caret svg{
+  width:17px;
+  height:17px;
+  stroke:var(--k-green-dark);
+  fill:none;
+  stroke-width:2.2;
+  stroke-linecap:round;
+  stroke-linejoin:round
+}
+.picker-list{
+  position:absolute;
+  top:calc(100% + 6px);
+  left:0;
+  right:0;
+  z-index:5;
+  margin:0;
+  padding:6px;
+  list-style:none;
+  border:1px solid #d7e0d9;
+  border-radius:12px;
+  background:#fff;
+  box-shadow:0 16px 32px rgba(31,64,42,.16);
+  max-height:232px;
+  overflow:auto
+}
+.picker-list[hidden]{
+  display:none!important
+}
+.picker-option{
+  padding:11px 12px;
+  border-radius:8px;
+  font-size:14px;
+  color:var(--k-ink);
+  cursor:pointer;
+  outline:none
+}
+.picker-option+.picker-option{
+  margin-top:2px
+}
+.picker-option:hover,.picker-option:focus{
+  background:var(--k-row)
+}
+.picker-option[aria-selected="true"]{
+  background:var(--k-green);
+  color:#fff;
+  font-weight:600
+}
+.picker-option[aria-selected="true"]:hover,.picker-option[aria-selected="true"]:focus{
+  background:var(--k-green-dark)
+}
+@media (prefers-reduced-motion:reduce){
+  .picker-caret{transition:none}
+}
+/* The generic .sheet-card typography must not reach the report form. */
+.sheet-card .picker-list{
+  display:block;
+  padding:6px;
+  gap:0
+}
+.sheet-card .picker-option{
+  font-size:14px;
+  line-height:1.4;
+  color:var(--k-ink)
+}
+.sheet-card .picker-option[aria-selected="true"]{
+  color:#fff
+}
+.sheet-card .report-status{
+  font-size:13px;
+  line-height:1.4;
+  color:var(--k-green-deep)
+}
+.sheet-card .report-status.error{
+  color:#8c3a34
 }

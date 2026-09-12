@@ -34,7 +34,7 @@
     $('sign-out').onclick = () => { unlocked = false; try {
         sessionStorage.removeItem('bottlenet-admin');
     }
-    catch { } inputs.forEach(i => i.value = ''); show(); };
+    catch { } inputs.forEach(i => i.value = ''); location.href = '../index.html'; };
     const descriptions = { overview: ['Station overview', 'A live look at your station and its impact.'], transactions: ['Transactions', 'Every bottle and every connection, accounted for.'], sessions: ['Active sessions', 'Manage the connections your station makes possible.'], machine: ['Machine status', 'Station health, collection capacity, and maintenance.'], security: ['Security and alarms', 'Bin tampering, unauthorised access, and alarm history.'], settings: ['Station settings', 'Manage bottle acceptance and connection rewards.'] };
     const badge = (text, color = 'green') => `<span class="badge ${color}">${text}</span>`;
     const alarmTypes = { bin_opened: ['Collection bin opened', 'Lid switch triggered outside a scheduled collection.'], bottle_removed: ['Bottles removed from bin', 'Bin weight dropped without a collection being recorded.'], tamper: ['Tamper detected', 'Enclosure movement or shock sensed by the tamper sensor.'], door_open: ['Service door left open', 'Service door has stayed open longer than two minutes.'], power: ['Power interruption', 'Station lost mains power and ran on backup.'] };

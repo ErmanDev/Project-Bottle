@@ -59,10 +59,12 @@ const server = http.createServer((req, res) => {
         await page.locator('#transaction-filter').selectOption('rejected');
         assert.equal(await page.locator('#transaction-rows tr').count(), 2);
         await page.locator('[data-tab="settings"]').click();
-        await page.locator('#rate').fill('15');
+        await page.locator('#minutes-large').fill('15');
         await page.locator('#settings-form button').click();
         await page.goto(url);
-        assert.equal(await page.locator('#reward-rate').textContent(), '15 minutes');
+        await page.locator('[data-sheet="rates"]').click();
+        assert.equal(await page.locator('#rate-large').textContent(), '15 minutes');
+        await page.locator('#sheet-rates .sheet-close').click();
         await page.locator('summary').click();
         await page.locator('#preview-state').selectOption('full');
         assert(await page.locator('#deposit-button').isDisabled());

@@ -10,15 +10,16 @@
             depositing = false;
             processing = false;
         }
-        $('timer').textContent = store.time(d.expiresAt - Date.now());
-        $('connection-badge').textContent = active ? 'Connected' : 'Time expired';
-        $('connection-badge').className = `badge ${active ? 'blue' : 'amber'}`;
-        $('timer-caption').textContent = active ? 'A little more time for what matters.' : 'A new bottle. A new connection.';
+        const remaining = Math.max(0, d.expiresAt - Date.now()), total = Math.max(1, d.sessionTotal || remaining);
+        $('timer').textContent = store.time(remaining);
+        const percent = Math.max(0, Math.min(100, remaining / total * 100));
+        $('timer-fill').style.width = percent + '%';
+        $('timer-fill').parentElement.setAttribute('aria-valuenow', Math.round(percent));
+        $('timer-fill').classList.toggle('low', active && remaining <= 60000);
+        $('connection-label').textContent = active ? 'Connected' : 'Time expired';
+        $('connection-badge').className = `conn-pill ${active ? 'on' : 'off'}`;
         $('session-bottles').textContent = d.sessionBottles;
         $('last-reward').textContent = `+${d.lastReward} min`;
-        const rateEl = $('reward-rate');
-        if (rateEl) rateEl.textContent = Object.values(d.sizes).map(size => `${size.short} ${size.minutes} min`).join(' • ');
-        $('community-count').textContent = d.bottles;
         $('deposit-button').hidden = depositing;
         $('deposit-controls').hidden = !depositing;
         $('deposit-button').disabled = d.station !== 'ready' || locked;
@@ -61,6 +62,7 @@
                     s.sessionBottles++;
                     s.lastReward = minutes;
                     s.expiresAt = Math.max(Date.now(), s.expiresAt) + minutes * 60000;
+                    s.sessionTotal = s.expiresAt - Date.now();
                     s.bin = Math.min(100, s.bin + 1);
                     s.collections[6] = s.bottles;
                     if (s.bin === 100)
@@ -87,6 +89,7 @@
         processing = false;
         depositing = false; messageUntil = 0; store.update(d => { d.depositUntil = 0; d.depositOwner = null; if (state === 'expired') {
         d.expiresAt = Date.now();
+        d.sessionTotal = 0;
         d.station = 'ready';
     }
     else
